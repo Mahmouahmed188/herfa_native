@@ -7,6 +7,8 @@ export interface Theme {
     primaryLight: string;
     secondary: string;
     background: string;
+    backgroundLight: string;
+    backgroundDark: string;
     surface: string;
     text: string;
     textSecondary: string;
@@ -44,19 +46,21 @@ export interface Theme {
 
 export const lightTheme: Theme = {
   colors: {
-    primary: '#007AFF',
-    primaryDark: '#0056B3',
-    primaryLight: '#4A9EFF',
-    secondary: '#5856D6',
-    background: '#F2F2F7',
+    primary: '#53D22D',
+    primaryDark: '#46B426',
+    primaryLight: '#6EE04B',
+    secondary: '#88A381',
+    background: '#f8f7f5',
+    backgroundLight: '#f8f7f5',
+    backgroundDark: '#0A0F08',
     surface: '#FFFFFF',
-    text: '#000000',
-    textSecondary: '#6C6C6C',
-    border: '#C6C6C8',
-    error: '#FF3B30',
-    success: '#34C759',
-    warning: '#FF9500',
-    placeholder: '#8E8E93',
+    text: '#1a1a1a',
+    textSecondary: '#6b7280',
+    border: '#e5e7eb',
+    error: '#ef4444',
+    success: '#22c55e',
+    warning: '#f59e0b',
+    placeholder: '#9ca3af',
   },
   spacing: {
     xs: 4,
@@ -74,31 +78,33 @@ export const lightTheme: Theme = {
     full: 9999,
   },
   typography: {
-    h1: { fontSize: 34, fontWeight: '700', lineHeight: 41 },
+    h1: { fontSize: 44, fontWeight: '700', lineHeight: 48 },
     h2: { fontSize: 28, fontWeight: '700', lineHeight: 34 },
     h3: { fontSize: 22, fontWeight: '600', lineHeight: 28 },
-    body: { fontSize: 17, fontWeight: '400', lineHeight: 22 },
-    bodySmall: { fontSize: 15, fontWeight: '400', lineHeight: 20 },
-    caption: { fontSize: 13, fontWeight: '400', lineHeight: 18 },
-    button: { fontSize: 17, fontWeight: '600', lineHeight: 22 },
+    body: { fontSize: 16, fontWeight: '400', lineHeight: 24 },
+    bodySmall: { fontSize: 14, fontWeight: '400', lineHeight: 20 },
+    caption: { fontSize: 12, fontWeight: '400', lineHeight: 16 },
+    button: { fontSize: 14, fontWeight: '600', lineHeight: 20 },
   },
 };
 
 export const darkTheme: Theme = {
   colors: {
-    primary: '#0A84FF',
-    primaryDark: '#0056B3',
-    primaryLight: '#4A9EFF',
-    secondary: '#5E5CE6',
-    background: '#000000',
-    surface: '#1C1C1E',
+    primary: '#53D22D',
+    primaryDark: '#46B426',
+    primaryLight: '#6EE04B',
+    secondary: '#88A381',
+    background: '#0A0F08',
+    backgroundLight: '#f8f7f5',
+    backgroundDark: '#0A0F08',
+    surface: '#1A2318',
     text: '#FFFFFF',
-    textSecondary: '#8E8E93',
-    border: '#38383A',
-    error: '#FF453A',
-    success: '#30D158',
-    warning: '#FF9F0A',
-    placeholder: '#636366',
+    textSecondary: '#88A381',
+    border: '#1A2318',
+    error: '#ef4444',
+    success: '#22c55e',
+    warning: '#f59e0b',
+    placeholder: '#6b7280',
   },
   spacing: {
     xs: 4,
@@ -116,12 +122,12 @@ export const darkTheme: Theme = {
     full: 9999,
   },
   typography: {
-    h1: { fontSize: 34, fontWeight: '700', lineHeight: 41 },
+    h1: { fontSize: 44, fontWeight: '700', lineHeight: 48 },
     h2: { fontSize: 28, fontWeight: '700', lineHeight: 34 },
     h3: { fontSize: 22, fontWeight: '600', lineHeight: 28 },
-    body: { fontSize: 17, fontWeight: '400', lineHeight: 22 },
-    bodySmall: { fontSize: 15, fontWeight: '400', lineHeight: 20 },
-    caption: { fontSize: 13, fontWeight: '400', lineHeight: 18 },
-    button: { fontSize: 17, fontWeight: '600', lineHeight: 22 },
+    body: { fontSize: 16, fontWeight: '400', lineHeight: 24 },
+    bodySmall: { fontSize: 14, fontWeight: '400', lineHeight: 20 },
+    caption: { fontSize: 12, fontWeight: '400', lineHeight: 16 },
+    button: { fontSize: 14, fontWeight: '600', lineHeight: 20 },
   },
 };

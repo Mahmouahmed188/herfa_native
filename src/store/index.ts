@@ -1,5 +1,2 @@
-import React from 'react';
-
-// Re-export stores
+// Store exports
 export { useThemeStore } from './themeStore';
-export { useAppStore } from './appStore';
