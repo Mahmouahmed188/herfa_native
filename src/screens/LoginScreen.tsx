@@ -18,6 +18,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MaterialIcons } from '@expo/vector-icons';
 import { RootStackParamList } from '../navigation/AppNavigator';
+import { useAuthStore } from '../store/authStore';
 
 // Color constants from design
 const COLORS = {
@@ -87,6 +88,7 @@ const LoginScreen: React.FC = () => {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { login, isLoading: authLoading } = useAuthStore();
 
   // Form state
   const [formData, setFormData] = useState<LoginFormData>({
@@ -95,7 +97,6 @@ const LoginScreen: React.FC = () => {
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'login' | 'signup'>('login');
 
   // Theme colors
@@ -161,22 +162,14 @@ const LoginScreen: React.FC = () => {
       return;
     }
 
-    setIsLoading(true);
-
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      // TODO: Replace with actual authentication logic
-      console.log('Login successful:', formData);
-
-      Alert.alert('Success', 'Login successful!');
+      await login(formData.email, formData.password);
+      // Navigation to Home is handled automatically by AppNavigator
+      // when isAuthenticated becomes true
     } catch (error) {
       Alert.alert('Error', 'Login failed. Please try again.');
-    } finally {
-      setIsLoading(false);
     }
-  }, [formData]);
+  }, [formData, login]);
 
   // Face ID handler
   const handleFaceIDLogin = useCallback(() => {
@@ -253,7 +246,7 @@ const LoginScreen: React.FC = () => {
                     keyboardType="email-address"
                     autoCapitalize="none"
                     autoCorrect={false}
-                    editable={!isLoading}
+                    editable={!authLoading}
                   />
                 </View>
                 {errors.email && (
@@ -285,7 +278,7 @@ const LoginScreen: React.FC = () => {
                     value={formData.password}
                     onChangeText={handlePasswordChange}
                     secureTextEntry={!showPassword}
-                    editable={!isLoading}
+                    editable={!authLoading}
                   />
                   <TouchableOpacity
                     style={styles.visibilityButton}
@@ -315,10 +308,10 @@ const LoginScreen: React.FC = () => {
               <TouchableOpacity
                 style={styles.loginButton}
                 onPress={handleLogin}
-                disabled={isLoading}
+                disabled={authLoading}
                 activeOpacity={0.9}
               >
-                {isLoading ? (
+                {authLoading ? (
                   <ActivityIndicator color={COLORS.white} />
                 ) : (
                   <>
