@@ -166,10 +166,10 @@ const LoginScreen: React.FC = () => {
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1500));
-      
+
       // TODO: Replace with actual authentication logic
       console.log('Login successful:', formData);
-      
+
       Alert.alert('Success', 'Login successful!');
     } catch (error) {
       Alert.alert('Error', 'Login failed. Please try again.');
@@ -240,8 +240,8 @@ const LoginScreen: React.FC = () => {
                   <TextInput
                     style={[
                       styles.input,
-                      { 
-                        backgroundColor: inputBgColor, 
+                      {
+                        backgroundColor: inputBgColor,
                         color: textColor,
                         borderColor: errors.email ? COLORS.error : 'transparent',
                       }
@@ -273,8 +273,8 @@ const LoginScreen: React.FC = () => {
                   <TextInput
                     style={[
                       styles.input,
-                      { 
-                        backgroundColor: inputBgColor, 
+                      {
+                        backgroundColor: inputBgColor,
                         color: textColor,
                         borderColor: errors.password ? COLORS.error : 'transparent',
                         paddingRight: 48,
@@ -287,15 +287,15 @@ const LoginScreen: React.FC = () => {
                     secureTextEntry={!showPassword}
                     editable={!isLoading}
                   />
-                  <TouchableOpacity 
-                    style={styles.visibilityButton} 
+                  <TouchableOpacity
+                    style={styles.visibilityButton}
                     onPress={togglePasswordVisibility}
                     activeOpacity={0.7}
                   >
-                    <MaterialIcons 
-                      name={showPassword ? 'visibility-off' : 'visibility'} 
-                      size={20} 
-                      color={COLORS.textSecondary} 
+                    <MaterialIcons
+                      name={showPassword ? 'visibility-off' : 'visibility'}
+                      size={20}
+                      color={COLORS.textSecondary}
                     />
                   </TouchableOpacity>
                 </View>
@@ -327,38 +327,38 @@ const LoginScreen: React.FC = () => {
                   </>
                 )}
               </TouchableOpacity>
-
-              {/* Face ID Login */}
+            </View>
+              {/* 
               <TouchableOpacity
                 style={styles.faceIdContainer}
                 onPress={handleFaceIDLogin}
                 activeOpacity={0.8}
               >
                 <MaterialIcons name="face" size={40} color={COLORS.primary} />
-                <Text style={styles.faceIdText}>Login with Face ID</Text>
+            <Text style={styles.faceIdText}>Login with Face ID</Text>
               </TouchableOpacity>
+            </View> */}
+
+              {/* Divider */}
+              <Divider />
+
+              {/* Social Login Buttons */}
+              <View style={styles.socialButtonsContainer}>
+                <TouchableOpacity style={styles.socialButton} onPress={handleGoogleLogin} activeOpacity={0.8}>
+                  <View style={styles.googleIconContainer}>
+                    <Text style={styles.googleIconText}>G</Text>
+                  </View>
+                  <Text style={styles.socialButtonText}>Google</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.socialButton} onPress={handleAppleLogin} activeOpacity={0.8}>
+                  <MaterialIcons name="apple" size={22} color={isDark ? '#FFFFFF' : COLORS.charcoal} />
+                  <Text style={styles.socialButtonText}>Apple</Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Bottom Spacer */}
+              <View style={styles.bottomSpacer} />
             </View>
-
-            {/* Divider */}
-            <Divider />
-
-            {/* Social Login Buttons */}
-            <View style={styles.socialButtonsContainer}>
-              <TouchableOpacity style={styles.socialButton} onPress={handleGoogleLogin} activeOpacity={0.8}>
-                <View style={styles.googleIconContainer}>
-                  <Text style={styles.googleIconText}>G</Text>
-                </View>
-                <Text style={styles.socialButtonText}>Google</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.socialButton} onPress={handleAppleLogin} activeOpacity={0.8}>
-                <MaterialIcons name="apple" size={22} color={isDark ? '#FFFFFF' : COLORS.charcoal} />
-                <Text style={styles.socialButtonText}>Apple</Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* Bottom Spacer */}
-            <View style={styles.bottomSpacer} />
-          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
