@@ -5,10 +5,16 @@ import { useThemeStore } from '../store/themeStore';
 
 // Screens
 import SplashScreen from '../screens/SplashScreen';
+import OnboardingWelcomeScreen from '../screens/OnboardingWelcomeScreen';
+import RegistrationScreen from '../screens/RegistrationScreen';
+import LoginScreen from '../screens/LoginScreen';
 
 // Stack Param List
 export type RootStackParamList = {
   Splash: undefined;
+  Onboarding: undefined;
+  Registration: undefined;
+  Login: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -25,11 +31,24 @@ const AppNavigator: React.FC = () => {
           contentStyle: {
             backgroundColor: theme.colors.background,
           },
+          animation: 'slide_from_right',
         }}
       >
         <Stack.Screen
           name="Splash"
           component={SplashScreen}
+        />
+        <Stack.Screen
+          name="Onboarding"
+          component={OnboardingWelcomeScreen}
+        />
+        <Stack.Screen
+          name="Registration"
+          component={RegistrationScreen}
+        />
+        <Stack.Screen
+          name="Login"
+          component={LoginScreen}
         />
       </Stack.Navigator>
     </NavigationContainer>

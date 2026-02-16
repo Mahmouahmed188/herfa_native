@@ -6,20 +6,28 @@ import {
   Animated,
   Dimensions,
   useColorScheme,
+  ActivityIndicator,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/AppNavigator';
 
 const { width, height } = Dimensions.get('window');
 
-// Construction Icon Component (using simple shapes)
+/**
+ * Construction Icon Component
+ * Displays the app icon/logo using an emoji (🏗️) which represents construction/building
+ * Fully responsive - accepts size and color props
+ */
 const ConstructionIcon: React.FC<{ size?: number; color?: string }> = ({
   size = 48,
   color = '#FFFFFF',
 }) => {
   return (
     <View style={[styles.iconContainer, { width: size, height: size }]}>
-      {/* Simple construction icon using text */}
+      {/* Construction emoji scaled proportionally to the container size */}
       <Text style={[styles.iconText, { fontSize: size * 0.6, color }]}>
         🏗️
       </Text>
@@ -28,6 +36,11 @@ const ConstructionIcon: React.FC<{ size?: number; color?: string }> = ({
 };
 
 // Spinning Activity Indicator
+/**
+ * Custom Activity Spinner Component
+ * Displays a rotating loading indicator with smooth animation
+ * Uses React Native's Animated API for 360-degree continuous rotation
+ */
 const ActivitySpinner: React.FC<{ color?: string; size?: number }> = ({
   color = '#53D22D',
   size = 20,
@@ -35,6 +48,7 @@ const ActivitySpinner: React.FC<{ color?: string; size?: number }> = ({
   const spinValue = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
+    // Create a continuous spinning animation that loops forever
     const spinAnimation = Animated.loop(
       Animated.timing(spinValue, {
         toValue: 1,
@@ -44,9 +58,11 @@ const ActivitySpinner: React.FC<{ color?: string; size?: number }> = ({
     );
     spinAnimation.start();
 
+    // Cleanup: Stop animation when component unmounts
     return () => spinAnimation.stop();
   }, [spinValue]);
 
+  // Interpolate the spin value to convert from 0-1 to 0deg-360deg
   const spin = spinValue.interpolate({
     inputRange: [0, 1],
     outputRange: ['0deg', '360deg'],
@@ -59,17 +75,33 @@ const ActivitySpinner: React.FC<{ color?: string; size?: number }> = ({
   );
 };
 
+/**
+ * SplashScreen Component
+ * 
+ * This is the initial loading screen that appears when the app launches.
+ * Features:
+ * - Displays the app logo with animated entrance
+ * - Shows a loading indicator and progress bar
+ * - Automatically navigates to the Onboarding screen after 2.5 seconds
+ * - Includes smooth fade-out transition before navigation
+ * - Supports dark/light mode themes
+ */
 const SplashScreen: React.FC = () => {
+  // Get the navigation object to programmatically navigate between screens
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  
+  // Detect system color scheme (dark/light mode)
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
 
-  // Animation values
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const scaleAnim = useRef(new Animated.Value(0.8)).current;
-  const progressAnim = useRef(new Animated.Value(0)).current;
+  // Animation values using refs to persist across renders
+  const fadeAnim = useRef(new Animated.Value(0)).current;      // Controls overall fade in/out
+  const scaleAnim = useRef(new Animated.Value(0.8)).current;   // Controls logo scale animation
+  const progressAnim = useRef(new Animated.Value(0)).current;  // Controls progress bar width
 
   useEffect(() => {
-    // Initial fade in and scale animation
+    // STEP 1: Initial entrance animations
+    // Fade in and scale up the logo simultaneously for a dynamic entrance
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
@@ -84,13 +116,35 @@ const SplashScreen: React.FC = () => {
       }),
     ]).start();
 
-    // Progress bar animation
+    // STEP 2: Progress bar animation
+    // Animate the progress bar from 0% to 65% over 2 seconds
     Animated.timing(progressAnim, {
       toValue: 0.65,
       duration: 2000,
       useNativeDriver: false,
     }).start();
-  }, [fadeAnim, scaleAnim, progressAnim]);
+
+    // STEP 3: Auto-navigation setup
+    // Set a timer to navigate to Onboarding screen after 2.5 seconds
+    // This gives users enough time to see the splash screen while app initializes
+    const navigationTimer = setTimeout(() => {
+      // STEP 4: Exit animation
+      // Fade out the entire screen before navigation for a smooth transition
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: true,
+      }).start(() => {
+        // STEP 5: Navigate to Onboarding screen
+        // This replaces the current screen in the stack
+        navigation.replace('Onboarding');
+      });
+    }, 2500); // 2.5 second delay
+
+    // Cleanup function: Clear the timer if component unmounts before navigation
+    // This prevents memory leaks and navigation errors
+    return () => clearTimeout(navigationTimer);
+  }, [fadeAnim, scaleAnim, progressAnim, navigation]);
 
   const backgroundColor = isDark ? '#0A0F08' : '#f8f7f5';
   const textColor = isDark ? '#FFFFFF' : '#1a1a1a';
@@ -98,10 +152,12 @@ const SplashScreen: React.FC = () => {
   const progressBgColor = isDark ? '#1A2318' : '#e5e7eb';
 
   return (
+    // Main container - takes full screen, applies theme background
     <View style={[styles.container, { backgroundColor }]}>
+      {/* Status bar adapts to theme for consistent appearance */}
       <StatusBar style={isDark ? 'light' : 'dark'} />
 
-      {/* Background Gradient Overlay */}
+      {/* Background Gradient Overlay - adds visual depth */}
       <LinearGradient
         colors={
           isDark
@@ -113,12 +169,12 @@ const SplashScreen: React.FC = () => {
         end={{ x: 0.5, y: 1 }}
       />
 
-      {/* Main Content */}
+      {/* Main Content Wrapper */}
       <View style={styles.content}>
-        {/* Top Spacer */}
+        {/* Top Spacer - pushes content to center vertically */}
         <View style={styles.topSpacer} />
 
-        {/* Logo Section */}
+        {/* Logo Section with entrance animations */}
         <Animated.View
           style={[
             styles.logoSection,
@@ -127,8 +183,10 @@ const SplashScreen: React.FC = () => {
               transform: [{ scale: scaleAnim }],
             },
           ]}
+          accessibilityLabel="Herfa App Logo"
+          accessibilityRole="header"
         >
-          {/* Logo Container */}
+          {/* Logo Container with gradient background */}
           <View style={styles.logoContainer}>
             <LinearGradient
               colors={['#53D22D', '#46B426']}
@@ -136,7 +194,7 @@ const SplashScreen: React.FC = () => {
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
             >
-              {/* Border overlay */}
+              {/* Border overlay for subtle depth */}
               <View style={styles.logoBorder} />
               <ConstructionIcon size={48} color="#FFFFFF" />
             </LinearGradient>
@@ -151,9 +209,9 @@ const SplashScreen: React.FC = () => {
           </Text>
         </Animated.View>
 
-        {/* Bottom Section */}
+        {/* Bottom Section - Loading and version info */}
         <View style={styles.bottomSection}>
-          {/* Loading Section */}
+          {/* Loading Section with progress indicator */}
           <View style={styles.loadingContainer}>
             <View style={styles.loadingHeader}>
               <Text style={[styles.loadingText, { color: secondaryTextColor }]}>
@@ -162,12 +220,14 @@ const SplashScreen: React.FC = () => {
               <ActivitySpinner color="#53D22D" size={16} />
             </View>
 
-            {/* Progress Bar */}
+            {/* Animated Progress Bar */}
             <View
               style={[
                 styles.progressBarContainer,
                 { backgroundColor: progressBgColor },
               ]}
+              accessibilityLabel="Loading progress"
+              accessibilityRole="progressbar"
             >
               <Animated.View
                 style={[
@@ -193,35 +253,49 @@ const SplashScreen: React.FC = () => {
   );
 };
 
+/**
+ * Styles for SplashScreen
+ * Uses responsive sizing based on screen dimensions
+ * Works on all device sizes (phones, tablets)
+ */
 const styles = StyleSheet.create({
+  // Main container fills the entire screen
   container: {
     flex: 1,
   },
+  // Background gradient overlay covers entire screen
   gradientOverlay: {
     ...StyleSheet.absoluteFillObject,
     zIndex: 0,
   },
+  // Content wrapper for proper z-index layering
   content: {
     flex: 1,
     zIndex: 1,
   },
+  // Top spacer takes 15% of screen height for vertical centering
   topSpacer: {
     height: height * 0.15,
   },
+  // Logo section centered with padding
   logoSection: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 32,
   },
+  // Logo container with shadow effects
   logoContainer: {
     marginBottom: 32,
+    // iOS shadow
     shadowColor: '#53D22D',
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.3,
     shadowRadius: 20,
+    // Android shadow
     elevation: 10,
   },
+  // Gradient background for logo
   logoGradient: {
     width: 96,
     height: 96,
@@ -230,43 +304,51 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     position: 'relative',
   },
+  // Subtle border overlay for depth
   logoBorder: {
     ...StyleSheet.absoluteFillObject,
     borderRadius: 16,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
   },
+  // Icon container
   iconContainer: {
     alignItems: 'center',
     justifyContent: 'center',
   },
+  // Icon text styling
   iconText: {
     textAlign: 'center',
   },
+  // App name text styling
   appName: {
     fontSize: 44,
     fontWeight: '700',
     letterSpacing: -0.5,
     marginBottom: 12,
   },
+  // Tagline text styling
   tagline: {
     fontSize: 13,
     fontWeight: '600',
     letterSpacing: 2.5,
     textTransform: 'uppercase',
   },
+  // Bottom section with loading and version
   bottomSection: {
     paddingHorizontal: 48,
     paddingBottom: 64,
     alignItems: 'center',
     width: '100%',
-    maxWidth: 400,
+    maxWidth: 400, // Limits width on larger screens
     alignSelf: 'center',
   },
+  // Loading container
   loadingContainer: {
     width: '100%',
     marginBottom: 40,
   },
+  // Loading header with text and spinner
   loadingHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -274,26 +356,31 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     paddingHorizontal: 4,
   },
+  // Loading text styling
   loadingText: {
     fontSize: 11,
     fontWeight: '700',
     letterSpacing: 2,
   },
+  // Progress bar container
   progressBarContainer: {
     height: 6,
     borderRadius: 3,
     overflow: 'hidden',
   },
+  // Animated progress bar with glow effect
   progressBar: {
     height: '100%',
     backgroundColor: '#53D22D',
     borderRadius: 3,
+    // Glow effect
     shadowColor: '#53D22D',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.6,
     shadowRadius: 8,
     elevation: 4,
   },
+  // Version text styling
   versionText: {
     fontSize: 10,
     fontWeight: '500',
