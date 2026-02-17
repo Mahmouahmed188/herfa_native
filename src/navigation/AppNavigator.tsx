@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAuthStore } from '../store/authStore';
-import { useThemeStore } from '../store/themeStore';
+import { useTheme } from '../contexts/ThemeContext';
 
 // Screens
 import SplashScreen from '../screens/SplashScreen';
@@ -24,7 +24,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 // Auth Navigator - Screens for non-authenticated users
 const AuthNavigator: React.FC = () => {
-  const { theme } = useThemeStore();
+  const { theme } = useTheme();
 
   return (
     <Stack.Navigator
@@ -46,7 +46,7 @@ const AuthNavigator: React.FC = () => {
 
 // Main Navigator - App screens for authenticated users
 const MainNavigator: React.FC = () => {
-  const { theme } = useThemeStore();
+  const { theme } = useTheme();
 
   return (
     <Stack.Navigator
@@ -65,8 +65,7 @@ const MainNavigator: React.FC = () => {
 
 // Root Navigator - Handles auth state and navigation flow
 const AppNavigator: React.FC = () => {
-  const { isAuthenticated, isLoading } = useAuthStore();
-  const { theme, isDarkMode } = useThemeStore();
+  const { isAuthenticated } = useAuthStore();
   const [isReady, setIsReady] = useState(false);
 
   // Initialize app state

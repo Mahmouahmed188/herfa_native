@@ -2,21 +2,12 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useThemeStore } from '../store/themeStore';
+import { useLanguage } from '../contexts/LanguageContext';
+import { useTheme } from '../contexts/ThemeContext';
 import HomeScreen from '../screens/HomeScreen';
 import BookingsScreen from '../screens/BookingsScreen';
 import ChatScreen from '../screens/ChatScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-
-// Color constants
-const COLORS = {
-  primary: '#53D22D',
-  backgroundWhite: '#FFFFFF',
-  charcoal: '#333333',
-  textSecondary: '#6B7280',
-  borderLight: '#E5E7EB',
-  red: '#EF4444',
-};
 
 // Tab Param List
 export type BottomTabParamList = {
@@ -65,67 +56,57 @@ const TabLabel: React.FC<TabLabelProps> = ({ label, color, focused }) => (
 
 // Bottom Tab Navigator
 const BottomTabNavigator: React.FC = () => {
-  const { isDarkMode } = useThemeStore();
+  const { t } = useLanguage();
+  const { theme, isDark } = useTheme();
 
-  const screenOptions = ({ route }: { route: { name: keyof BottomTabParamList } }) => ({
-    tabBarIcon: ({ color, size, focused }: { color: string; size: number; focused: boolean }) => {
-      let iconName: string;
-      let hasBadge = false;
+  const screenOptions = ({ route }: { route: { name: keyof BottomTabParamList } }) => {
+    let iconName: string;
+    let hasBadge = false;
+    let labelKey: string;
 
-      switch (route.name) {
-        case 'Home':
-          iconName = 'home';
-          break;
-        case 'Bookings':
-          iconName = 'calendar-month';
-          break;
-        case 'Chat':
-          iconName = 'chat-bubble';
-          hasBadge = true; // Show badge for unread messages
-          break;
-        case 'Profile':
-          iconName = 'person';
-          break;
-        default:
-          iconName = 'home';
-      }
+    switch (route.name) {
+      case 'Home':
+        iconName = 'home';
+        labelKey = 'tabs.home';
+        break;
+      case 'Bookings':
+        iconName = 'calendar-month';
+        labelKey = 'tabs.bookings';
+        break;
+      case 'Chat':
+        iconName = 'chat-bubble';
+        labelKey = 'tabs.chat';
+        hasBadge = true;
+        break;
+      case 'Profile':
+        iconName = 'person';
+        labelKey = 'tabs.profile';
+        break;
+      default:
+        iconName = 'home';
+        labelKey = 'tabs.home';
+    }
 
-      return <TabIcon name={iconName} color={color} size={28} focused={focused} hasBadge={hasBadge} />;
-    },
-    tabBarLabel: ({ color, focused }: { color: string; focused: boolean }) => {
-      let label: string;
-
-      switch (route.name) {
-        case 'Home':
-          label = 'Home';
-          break;
-        case 'Bookings':
-          label = 'Bookings';
-          break;
-        case 'Chat':
-          label = 'Chat';
-          break;
-        case 'Profile':
-          label = 'Profile';
-          break;
-        default:
-          label = route.name;
-      }
-
-      return <TabLabel label={label} color={color} focused={focused} />;
-    },
-    tabBarActiveTintColor: COLORS.primary,
-    tabBarInactiveTintColor: COLORS.textSecondary,
-    tabBarStyle: [
-      styles.tabBar,
-      {
-        backgroundColor: isDarkMode ? '#0A0F08' : COLORS.backgroundWhite,
-        borderTopColor: isDarkMode ? '#1A2318' : COLORS.borderLight,
+    return {
+      tabBarIcon: ({ color, size, focused }: { color: string; size: number; focused: boolean }) => {
+        return <TabIcon name={iconName} color={color} size={28} focused={focused} hasBadge={hasBadge} />;
       },
-    ],
-    tabBarItemStyle: styles.tabBarItem,
-    headerShown: false,
-  });
+      tabBarLabel: ({ color, focused }: { color: string; focused: boolean }) => {
+        return <TabLabel label={t(labelKey)} color={color} focused={focused} />;
+      },
+      tabBarActiveTintColor: theme.colors.primary,
+      tabBarInactiveTintColor: theme.colors.textSecondary,
+      tabBarStyle: [
+        styles.tabBar,
+        {
+          backgroundColor: theme.colors.background,
+          borderTopColor: theme.colors.border,
+        },
+      ],
+      tabBarItemStyle: styles.tabBarItem,
+      headerShown: false,
+    };
+  };
 
   return (
     <Tab.Navigator screenOptions={screenOptions}>
@@ -150,9 +131,9 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: COLORS.red,
+    backgroundColor: '#EF4444',
     borderWidth: 2,
-    borderColor: COLORS.backgroundWhite,
+    borderColor: '#FFFFFF',
   },
   tabLabel: {
     fontSize: 10,

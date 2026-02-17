@@ -5,83 +5,184 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
-  useColorScheme,
+  ScrollView,
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useAuthStore } from '../store/authStore';
-
-const COLORS = {
-  primary: '#53D22D',
-  backgroundWhite: '#FFFFFF',
-  surfaceLight: '#F9FAFB',
-  charcoal: '#333333',
-  textSecondary: '#6B7280',
-  borderLight: '#E5E7EB',
-  red: '#EF4444',
-};
+import { useLanguage, SUPPORTED_LANGUAGES } from '../contexts/LanguageContext';
+import { useTheme, ThemeMode } from '../contexts/ThemeContext';
 
 const ProfileScreen: React.FC = () => {
   const { user, logout } = useAuthStore();
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const { t, currentLanguage, changeLanguage, supportedLanguages } = useLanguage();
+  const { theme, themeMode, setThemeMode, isDark } = useTheme();
 
   const handleLogout = () => {
     Alert.alert(
-      'Logout',
-      'Are you sure you want to logout?',
+      t('common.confirm') || 'Logout',
+      t('profile.logoutConfirmation'),
       [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Logout', onPress: () => logout(), style: 'destructive' },
+        { text: t('common.cancel'), style: 'cancel' },
+        { text: t('auth.logout'), onPress: () => logout(), style: 'destructive' },
       ]
     );
   };
 
+  const handleLanguageChange = () => {
+    Alert.alert(
+      t('profile.selectLanguage'),
+      '',
+      supportedLanguages.map((lang) => ({
+        text: lang.name,
+        onPress: () => changeLanguage(lang.code),
+      }))
+    );
+  };
+
+  const handleThemeChange = () => {
+    const options: { text: string; onPress: () => void }[] = [];
+    
+    if (themeMode !== 'light') {
+      options.push({ text: t('profile.lightMode'), onPress: () => setThemeMode('light') });
+    }
+    if (themeMode !== 'dark') {
+      options.push({ text: t('profile.darkMode'), onPress: () => setThemeMode('dark') });
+    }
+    if (themeMode !== 'system') {
+      options.push({ text: t('profile.systemDefault'), onPress: () => setThemeMode('system') });
+    }
+
+    Alert.alert(
+      t('profile.theme'),
+      '',
+      [...options, { text: t('common.cancel'), style: 'cancel' }]
+    );
+  };
+
   const menuItems = [
-    { icon: 'person', title: 'Edit Profile', onPress: () => Alert.alert('Coming Soon') },
-    { icon: 'notifications', title: 'Notifications', onPress: () => Alert.alert('Coming Soon') },
-    { icon: 'payment', title: 'Payment Methods', onPress: () => Alert.alert('Coming Soon') },
-    { icon: 'help', title: 'Help & Support', onPress: () => Alert.alert('Coming Soon') },
-    { icon: 'settings', title: 'Settings', onPress: () => Alert.alert('Coming Soon') },
+    { 
+      icon: 'person', 
+      title: t('profile.editProfile'), 
+      onPress: () => Alert.alert(t('common.comingSoon')) 
+    },
+    { 
+      icon: 'notifications', 
+      title: t('profile.notifications'), 
+      onPress: () => Alert.alert(t('common.comingSoon')) 
+    },
+    { 
+      icon: 'payment', 
+      title: t('profile.paymentMethods'), 
+      onPress: () => Alert.alert(t('common.comingSoon')) 
+    },
+    { 
+      icon: 'help', 
+      title: t('profile.helpSupport'), 
+      onPress: () => Alert.alert(t('common.comingSoon')) 
+    },
+    { 
+      icon: 'settings', 
+      title: t('profile.settings'), 
+      onPress: () => Alert.alert(t('common.comingSoon')) 
+    },
   ];
 
+  const getCurrentLanguageName = () => {
+    const lang = supportedLanguages.find(l => l.code === currentLanguage);
+    return lang?.name || 'English';
+  };
+
+  const getCurrentThemeName = () => {
+    switch (themeMode) {
+      case 'light': return t('profile.lightMode');
+      case 'dark': return t('profile.darkMode');
+      case 'system': return t('profile.systemDefault');
+    }
+  };
+
   return (
-    <SafeAreaView style={[styles.container, isDark && styles.containerDark]}>
-      <View style={styles.header}>
-        <Text style={[styles.headerTitle, isDark && styles.textDark]}>Profile</Text>
-      </View>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['top']}>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.header}>
+          <Text style={[styles.headerTitle, { color: theme.colors.text }]}>{t('profile.title')}</Text>
+        </View>
 
-      <View style={styles.profileSection}>
-        <Image
-          source={{ uri: user?.avatar || 'https://via.placeholder.com/80' }}
-          style={styles.avatar}
-        />
-        <Text style={[styles.name, isDark && styles.textDark]}>{user?.name || 'Ahmed'}</Text>
-        <Text style={styles.email}>{user?.email || 'ahmed@example.com'}</Text>
-      </View>
+        <View style={styles.profileSection}>
+          <Image
+            source={{ uri: user?.avatar || 'https://via.placeholder.com/80' }}
+            style={styles.avatar}
+          />
+          <Text style={[styles.name, { color: theme.colors.text }]}>{user?.name || 'Ahmed'}</Text>
+          <Text style={[styles.email, { color: theme.colors.textSecondary }]}>{user?.email || 'ahmed@example.com'}</Text>
+        </View>
 
-      <View style={styles.menuSection}>
-        {menuItems.map((item, index) => (
+        {/* Language Setting */}
+        <View style={styles.settingSection}>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>{t('profile.language')}</Text>
           <TouchableOpacity
-            key={index}
-            style={[styles.menuItem, isDark && styles.menuItemDark]}
-            onPress={item.onPress}
+            style={[styles.settingItem, { backgroundColor: theme.colors.surfaceSecondary, borderColor: theme.colors.border }]}
+            onPress={handleLanguageChange}
             activeOpacity={0.7}
           >
-            <View style={styles.menuIconContainer}>
-              <MaterialIcons name={item.icon as any} size={24} color={COLORS.primary} />
+            <View style={[styles.settingIconContainer, { backgroundColor: `${theme.colors.primary}15` }]}>
+              <MaterialIcons name="language" size={24} color={theme.colors.primary} />
             </View>
-            <Text style={[styles.menuText, isDark && styles.textDark]}>{item.title}</Text>
-            <MaterialIcons name="chevron-right" size={24} color={COLORS.textSecondary} />
+            <Text style={[styles.settingText, { color: theme.colors.text }]}>{getCurrentLanguageName()}</Text>
+            <MaterialIcons name="chevron-right" size={24} color={theme.colors.textSecondary} />
           </TouchableOpacity>
-        ))}
-      </View>
+        </View>
 
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout} activeOpacity={0.8}>
-        <MaterialIcons name="logout" size={24} color={COLORS.red} />
-        <Text style={styles.logoutText}>Logout</Text>
-      </TouchableOpacity>
+        {/* Theme Setting */}
+        <View style={styles.settingSection}>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>{t('profile.theme')}</Text>
+          <TouchableOpacity
+            style={[styles.settingItem, { backgroundColor: theme.colors.surfaceSecondary, borderColor: theme.colors.border }]}
+            onPress={handleThemeChange}
+            activeOpacity={0.7}
+          >
+            <View style={[styles.settingIconContainer, { backgroundColor: `${theme.colors.primary}15` }]}>
+              <MaterialIcons 
+                name={themeMode === 'dark' ? 'dark-mode' : themeMode === 'light' ? 'light-mode' : 'brightness-auto'} 
+                size={24} 
+                color={theme.colors.primary} 
+              />
+            </View>
+            <Text style={[styles.settingText, { color: theme.colors.text }]}>{getCurrentThemeName()}</Text>
+            <MaterialIcons name="chevron-right" size={24} color={theme.colors.textSecondary} />
+          </TouchableOpacity>
+        </View>
+
+        {/* Menu Items */}
+        <View style={styles.menuSection}>
+          {menuItems.map((item, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[styles.menuItem, { backgroundColor: theme.colors.surfaceSecondary, borderColor: theme.colors.border }]}
+              onPress={item.onPress}
+              activeOpacity={0.7}
+            >
+              <View style={[styles.menuIconContainer, { backgroundColor: `${theme.colors.primary}15` }]}>
+                <MaterialIcons name={item.icon as any} size={24} color={theme.colors.primary} />
+              </View>
+              <Text style={[styles.menuText, { color: theme.colors.text }]}>{item.title}</Text>
+              <MaterialIcons name="chevron-right" size={24} color={theme.colors.textSecondary} />
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <TouchableOpacity 
+          style={[styles.logoutButton, { borderColor: theme.colors.error }]} 
+          onPress={handleLogout} 
+          activeOpacity={0.8}
+        >
+          <MaterialIcons name="logout" size={24} color={theme.colors.error} />
+          <Text style={[styles.logoutText, { color: theme.colors.error }]}>{t('auth.logout')}</Text>
+        </TouchableOpacity>
+
+        <View style={styles.bottomSpacer} />
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -89,13 +190,6 @@ const ProfileScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.backgroundWhite,
-  },
-  containerDark: {
-    backgroundColor: '#0A0F08',
-  },
-  textDark: {
-    color: '#FFFFFF',
   },
   header: {
     paddingHorizontal: 16,
@@ -105,7 +199,6 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 28,
     fontWeight: '700',
-    color: COLORS.charcoal,
   },
   profileSection: {
     alignItems: 'center',
@@ -117,16 +210,43 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: 40,
     borderWidth: 3,
-    borderColor: `${COLORS.primary}30`,
+    borderColor: 'rgba(83,210,45,0.3)',
   },
   name: {
     fontSize: 24,
     fontWeight: '700',
-    color: COLORS.charcoal,
   },
   email: {
     fontSize: 14,
-    color: COLORS.textSecondary,
+  },
+  settingSection: {
+    paddingHorizontal: 16,
+    marginBottom: 16,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  settingItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    gap: 12,
+  },
+  settingIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  settingText: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: '600',
   },
   menuSection: {
     paddingHorizontal: 16,
@@ -136,18 +256,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: COLORS.surfaceLight,
     borderRadius: 12,
+    borderWidth: 1,
     gap: 12,
-  },
-  menuItemDark: {
-    backgroundColor: '#1A2318',
   },
   menuIconContainer: {
     width: 40,
     height: 40,
     borderRadius: 10,
-    backgroundColor: `${COLORS.primary}15`,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -155,7 +271,6 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     fontWeight: '600',
-    color: COLORS.charcoal,
   },
   logoutButton: {
     flexDirection: 'row',
@@ -166,13 +281,14 @@ const styles = StyleSheet.create({
     marginTop: 24,
     padding: 16,
     borderWidth: 1,
-    borderColor: COLORS.red,
     borderRadius: 12,
   },
   logoutText: {
     fontSize: 16,
     fontWeight: '700',
-    color: COLORS.red,
+  },
+  bottomSpacer: {
+    height: 32,
   },
 });
 

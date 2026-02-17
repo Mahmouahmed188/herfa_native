@@ -3,37 +3,32 @@ import {
   View,
   Text,
   StyleSheet,
-  useColorScheme,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
-
-const COLORS = {
-  primary: '#53D22D',
-  backgroundWhite: '#FFFFFF',
-  surfaceLight: '#F9FAFB',
-  charcoal: '#333333',
-  textSecondary: '#6B7280',
-  borderLight: '#E5E7EB',
-};
+import { useLanguage } from '../contexts/LanguageContext';
+import { useTheme } from '../contexts/ThemeContext';
 
 const ChatScreen: React.FC = () => {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const { t } = useLanguage();
+  const { theme } = useTheme();
 
   return (
-    <SafeAreaView style={[styles.container, isDark && styles.containerDark]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['top']}>
+      <View style={styles.header}>
+        <Text style={[styles.headerTitle, { color: theme.colors.text }]}>{t('chat.title')}</Text>
+      </View>
       <View style={styles.content}>
         <MaterialIcons 
           name="chat-bubble" 
           size={64} 
-          color={COLORS.primary} 
+          color={theme.colors.primary} 
         />
-        <Text style={[styles.title, isDark && styles.textDark]}>
-          Messages
+        <Text style={[styles.title, { color: theme.colors.text }]}>
+          {t('chat.title')}
         </Text>
         <Text style={styles.subtitle}>
-          Chat with technicians and support team
+          {t('chat.subtitle')}
         </Text>
       </View>
     </SafeAreaView>
@@ -43,13 +38,15 @@ const ChatScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.backgroundWhite,
   },
-  containerDark: {
-    backgroundColor: '#0A0F08',
+  header: {
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 8,
   },
-  textDark: {
-    color: '#FFFFFF',
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: '700',
   },
   content: {
     flex: 1,
@@ -61,12 +58,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: '700',
-    color: COLORS.charcoal,
     marginTop: 16,
   },
   subtitle: {
     fontSize: 16,
-    color: COLORS.textSecondary,
+    color: '#6B7280',
     textAlign: 'center',
   },
 });
