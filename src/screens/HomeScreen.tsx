@@ -16,6 +16,9 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useAuthStore } from "../store/authStore";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useTheme } from "../contexts/ThemeContext";
+import { useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import type { RootStackParamList } from "../navigation/AppNavigator";
 
 const { width } = Dimensions.get("window");
 
@@ -255,6 +258,9 @@ const QuickActionCard: React.FC<QuickActionCardProps> = ({
 // Quick Actions Grid
 const QuickActionsGrid: React.FC = () => {
   const { t } = useLanguage();
+  const navigation = useNavigation<
+    NativeStackNavigationProp<RootStackParamList>
+  >();
   const handlePress = (feature: string) =>
     Alert.alert(
       t("common.comingSoon"),
@@ -269,7 +275,7 @@ const QuickActionsGrid: React.FC = () => {
           titleKey="home.bookService"
           subtitleKey="home.scheduleNew"
           variant="primary"
-          onPress={() => handlePress("Book Service")}
+          onPress={() => navigation.navigate("BookingRequest")}
         />
         <QuickActionCard
           icon="home"

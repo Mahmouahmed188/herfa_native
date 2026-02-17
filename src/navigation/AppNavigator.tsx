@@ -10,6 +10,7 @@ import OnboardingWelcomeScreen from '../screens/OnboardingWelcomeScreen';
 import RegistrationScreen from '../screens/RegistrationScreen';
 import LoginScreen from '../screens/LoginScreen';
 import BottomTabNavigator from './BottomTabNavigator';
+import BookingRequestScreen from '../screens/BookingRequestScreen';
 
 // Root Stack Param List
 export type RootStackParamList = {
@@ -18,6 +19,7 @@ export type RootStackParamList = {
   Registration: undefined;
   Login: undefined;
   Main: undefined;
+  BookingRequest: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -59,6 +61,7 @@ const MainNavigator: React.FC = () => {
       }}
     >
       <Stack.Screen name="Main" component={BottomTabNavigator} />
+      <Stack.Screen name="BookingRequest" component={BookingRequestScreen} />
     </Stack.Navigator>
   );
 };
