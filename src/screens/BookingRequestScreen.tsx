@@ -52,6 +52,7 @@ const BookingRequestScreen: React.FC = () => {
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
   const [location, setLocation] = useState("");
+  const [selectedCoords, setSelectedCoords] = useState({ lat: 24.7136, lng: 46.6753 });
   const [notes, setNotes] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState(new Date());
@@ -77,6 +78,21 @@ const BookingRequestScreen: React.FC = () => {
 
   const handleTimePress = () => {
     setSelectedTime((prev) => new Date(prev.getTime() + 3600000));
+  };
+
+  const handleLocationSelected = (selected: string, coords?: { lat: number; lng: number }) => {
+    setLocation(selected);
+    if (coords) {
+      setSelectedCoords(coords);
+    }
+  };
+
+  const handleEditLocation = () => {
+    navigation.navigate("LocationSelection", {
+      currentPlace: location || t("bookingRequest.locationPlaceholder"),
+      currentCoords: selectedCoords,
+      onLocationSelected: handleLocationSelected,
+    });
   };
 
   const handleAddPhoto = () => {
@@ -376,27 +392,36 @@ const BookingRequestScreen: React.FC = () => {
               </TouchableOpacity>
             </View>
             <View style={styles.mapCard}>
-              <Image
-                source={{
-                  uri: "https://lh3.googleusercontent.com/aida-public/AB6AXuCvWNsLl8zxBQq2mNT4Ml0daxnNMSNPPXVq4CPnqASrZwEV6RYzePCHiVLrdwvErd7bYeJR-7I_EbcSfsL3APhqKfQ7vw1fogtVpF2tIhfV5mbt0A0MEA0dzltAJF0KY-9PKXHXD9P_Ul-7x5iS_C_3iShtg5cqt_0Xa_OkEMtnus2QjzljgXkEqVGRyWu6rzycYr1yf8PLqGPiESqg0S0C9mkDxfR1CYCdXejST_2GRXgxffDQolAdknbLHEASpxaNvmlGPwQUq2g",
-                }}
-                style={styles.mapImage}
-                resizeMode="cover"
-              />
-              <View style={styles.mapOverlay}>
-                <Text
-                  style={[
-                    styles.mapOverlayText,
-                    {
-                      color: theme.colors.text,
-                      backgroundColor: theme.colors.surface,
-                    },
-                  ]}
-                >
-                  {t("bookingRequest.editOnMap")}
-                </Text>
-              </View>
-            </View>
+            <Image
+              source={{
+                uri: "https://lh3.googleusercontent.com/aida-public/AB6AXuCvWNsLl8zxBQq2mNT4Ml0daxnNMSNPPXVq4CPnqASrZwEV6RYzePCHiVLrdwvErd7bYeJR-7I_EbcSfsL3APhqKfQ7vw1fogtVpF2tIhfV5mbt0A0MEA0dzltAJF0KY-9PKXHXD9P_Ul-7x5iS_C_3iShtg5cqt_0Xa_OkEMtnus2QjzljgXkEqVGRyWu6rzycYr1yf8PLqGPiESqg0S0C9mkDxfR1CYCdXejST_2GRXgxffDQolAdknbLHEASpxaNvmlGPwQUq2g",
+              }}
+              style={styles.mapImage}
+              resizeMode="cover"
+            />
+            <TouchableOpacity
+              style={[
+                styles.mapOverlay,
+                {
+                  backgroundColor: theme.colors.surface,
+                  borderColor: theme.colors.borderLight,
+                },
+              ]}
+              activeOpacity={0.8}
+              onPress={handleEditLocation}
+            >
+              <Text
+                style={[
+                  styles.mapOverlayText,
+                  {
+                    color: theme.colors.text,
+                  },
+                ]}
+              >
+                {t("bookingRequest.editOnMap")}
+              </Text>
+            </TouchableOpacity>
+          </View>
           </View>
 
           <View style={styles.field}>
@@ -727,11 +752,12 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     alignItems: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 999,
+    borderWidth: 1,
   },
   mapOverlayText: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 999,
     fontSize: 12,
     fontWeight: "700",
   },

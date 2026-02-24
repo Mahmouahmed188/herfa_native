@@ -11,6 +11,7 @@ import RegistrationScreen from '../screens/RegistrationScreen';
 import LoginScreen from '../screens/LoginScreen';
 import BottomTabNavigator from './BottomTabNavigator';
 import BookingRequestScreen from '../screens/BookingRequestScreen';
+import LocationSelectionScreen from '../screens/LocationSelectionScreen';
 
 // Root Stack Param List
 export type RootStackParamList = {
@@ -20,6 +21,17 @@ export type RootStackParamList = {
   Login: undefined;
   Main: undefined;
   BookingRequest: undefined;
+  LocationSelection: {
+    currentPlace?: string;
+    currentCoords?: {
+      lat: number;
+      lng: number;
+    };
+    onLocationSelected?: (
+      address: string,
+      coords: { lat: number; lng: number },
+    ) => void;
+  };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -62,6 +74,11 @@ const MainNavigator: React.FC = () => {
     >
       <Stack.Screen name="Main" component={BottomTabNavigator} />
       <Stack.Screen name="BookingRequest" component={BookingRequestScreen} />
+      <Stack.Screen
+        name="LocationSelection"
+        component={LocationSelectionScreen}
+        options={{ presentation: "modal" }}
+      />
     </Stack.Navigator>
   );
 };

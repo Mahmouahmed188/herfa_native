@@ -8,3 +8,4 @@ export { default as BookingsScreen } from './BookingsScreen';
 export { default as BookingRequestScreen } from './BookingRequestScreen';
 export { default as ChatScreen } from './ChatScreen';
 export { default as ProfileScreen } from './ProfileScreen';
+export { default as LocationSelectionScreen } from './LocationSelectionScreen';

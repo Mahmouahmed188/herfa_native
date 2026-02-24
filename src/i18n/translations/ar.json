@@ -125,6 +125,21 @@
     "serviceInspection": "فحص",
     "serviceOther": "خدمات أخرى"
   },
+  "locationSelection": {
+    "title": "اختر الموقع",
+    "subtitle": "حدِّد بدقة المكان الذي يجب أن يتوجه إليه الفني",
+    "searchPlaceholder": "ابحث عن شارع أو منطقة...",
+    "useCurrentLocation": "استخدام الموقع الحالي",
+    "selectedLocation": "الموقع المختار",
+    "change": "تغيير",
+    "detailsPlaceholder": "شقة / جناح (اختياري)",
+    "tagHome": "المنزل",
+    "tagWork": "العمل",
+    "tagOther": "آخر",
+    "confirmButton": "تأكيد الموقع",
+    "currentLocationAddress": "الموقع الحالي",
+    "defaultAddress": "شارع الملك فهد 123"
+  },
   "chat": {
     "title": "الرسائل",
     "subtitle": "دردشة مع الفنيين وفريق الدعم",

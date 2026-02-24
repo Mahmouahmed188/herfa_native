@@ -125,6 +125,21 @@
     "serviceInspection": "Inspection",
     "serviceOther": "Other Services"
   },
+  "locationSelection": {
+    "title": "Select Location",
+    "subtitle": "Fine-tune where the technician should go",
+    "searchPlaceholder": "Search for street or area...",
+    "useCurrentLocation": "Use Current Location",
+    "selectedLocation": "Selected Location",
+    "change": "Change",
+    "detailsPlaceholder": "Apt / Suite (Optional)",
+    "tagHome": "Home",
+    "tagWork": "Work",
+    "tagOther": "Other",
+    "confirmButton": "Confirm Location",
+    "currentLocationAddress": "Current Location",
+    "defaultAddress": "123 King Fahd Road"
+  },
   "chat": {
     "title": "Messages",
     "subtitle": "Chat with technicians and support team",
