@@ -26,7 +26,9 @@
     "filter": "تصفية",
     "viewAll": "عرض الكل",
     "seeMore": "عرض المزيد",
-    "showLess": "عرض أقل"
+    "showLess": "عرض أقل",
+    "details": "التفاصيل",
+    "confirm": "تأكيد"
   },
   "auth": {
     "login": "تسجيل الدخول",
@@ -43,6 +45,8 @@
     "dontHaveAccount": "ليس لديك حساب؟",
     "loginSuccess": "تم تسجيل الدخول بنجاح!",
     "loginError": "فشل تسجيل الدخول. يرجى المحاولة مرة أخرى.",
+    "registrationSuccess": "تم إنشاء حسابك بنجاح!",
+    "registrationError": "فشل التسجيل. يرجى المحاولة مرة أخرى.",
     "emailPlaceholder": "technician@herfa.com",
     "passwordPlaceholder": "••••••••",
     "orContinueWith": "أو تابع باستخدام",
@@ -56,7 +60,10 @@
     "passwordRequired": "كلمة المرور مطلوبة",
     "passwordMinLength": "يجب أن تكون كلمة المرور 6 أحرف على الأقل",
     "passwordMismatch": "كلمتا المرور غير متطابقتين",
-    "fieldRequired": "هذا الحقل مطلوب"
+    "fieldRequired": "هذا الحقل مطلوب",
+    "nameRequired": "الاسم مطلوب",
+    "phoneRequired": "رقم الهاتف مطلوب",
+    "locationRequired": "الموقع مطلوب"
   },
   "home": {
     "goodMorning": "صباح الخير",
@@ -94,7 +101,9 @@
     "past": "السابقة",
     "cancelled": "الملغاة",
     "noBookings": "لا توجد حجوزات بعد",
-    "bookServiceNow": "احجز خدمة الآن"
+    "bookServiceNow": "احجز خدمة الآن",
+    "all": "الكل",
+    "noBookingsMessage": "ابدأ بحجز خدمتك الأولى"
   },
   "bookingRequest": {
     "title": "طلب حجز",
@@ -119,6 +128,7 @@
     "confirmButton": "تأكيد الحجز",
     "submitSuccessTitle": "تم الإرسال",
     "submitSuccessMessage": "تم إرسال طلب الحجز الخاص بك.",
+    "submitError": "فشل إرسال الطلب. يرجى المحاولة مرة أخرى.",
     "serviceLeak": "إصلاح تسرب",
     "serviceClog": "انسداد",
     "serviceInstall": "تركيب جديد",
@@ -145,7 +155,10 @@
     "subtitle": "دردشة مع الفنيين وفريق الدعم",
     "noMessages": "لا توجد رسائل بعد",
     "typeMessage": "اكتب رسالة...",
-    "send": "إرسال"
+    "send": "إرسال",
+    "conversations": "محادثات",
+    "noConversations": "لا توجد محادثات بعد",
+    "noConversationsMessage": "ابدأ محادثة بحجز خدمة"
   },
   "profile": {
     "title": "الملف الشخصي",

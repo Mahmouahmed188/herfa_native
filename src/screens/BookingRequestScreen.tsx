@@ -16,6 +16,9 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useTheme } from "../contexts/ThemeContext";
 import type { RootStackParamList } from "../navigation/AppNavigator";
+import { useJobs } from "../hooks/useJobs";
+import { useServices } from "../hooks/useServices";
+import { CreateJobPayload } from "../services";
 
 const CATEGORY_OPTIONS = [
   { id: "plumbing", icon: "plumbing", nameKey: "home.plumbing" },
@@ -46,9 +49,12 @@ const BookingRequestScreen: React.FC = () => {
   const navigation = useNavigation<
     NativeStackNavigationProp<RootStackParamList>
   >();
+  const { createJob, isLoading } = useJobs();
+  const { services, categories } = useServices();
 
   const [selectedCategory, setSelectedCategory] = useState(CATEGORY_OPTIONS[0].id);
   const [selectedService, setSelectedService] = useState(SERVICE_TYPES[0].id);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
   const [location, setLocation] = useState("");
@@ -99,11 +105,57 @@ const BookingRequestScreen: React.FC = () => {
     Alert.alert(t("common.comingSoon"), t("bookingRequest.addPhotos"));
   };
 
-  const handleConfirm = () => {
-    Alert.alert(
-      t("bookingRequest.submitSuccessTitle"),
-      t("bookingRequest.submitSuccessMessage"),
-    );
+  const handleConfirm = async () => {
+    if (!name.trim()) {
+      Alert.alert(t("common.error"), t("validation.nameRequired"));
+      return;
+    }
+    if (!contact.trim()) {
+      Alert.alert(t("common.error"), t("validation.phoneRequired"));
+      return;
+    }
+    if (!location.trim()) {
+      Alert.alert(t("common.error"), t("validation.locationRequired"));
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const category = categories.find(c => c.id === selectedCategory);
+      const service = services.find(s => s.categoryId === category?.id) || services[0];
+
+      const jobPayload: CreateJobPayload = {
+        serviceId: service?.id || selectedCategory,
+        title: `${category?.name || 'Service'} - ${SERVICE_TYPES.find(s => s.id === selectedService)?.labelKey || selectedService}`,
+        description: notes,
+        address: location,
+        latitude: selectedCoords.lat,
+        longitude: selectedCoords.lng,
+        scheduledDate: selectedDate.toISOString(),
+        scheduledTime: selectedTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+        notes: notes,
+      };
+
+      await createJob(jobPayload);
+
+      Alert.alert(
+        t("bookingRequest.submitSuccessTitle"),
+        t("bookingRequest.submitSuccessMessage"),
+        [
+          {
+            text: 'OK',
+            onPress: () => navigation.goBack(),
+          },
+        ]
+      );
+    } catch (error: any) {
+      Alert.alert(
+        t("common.error"),
+        error.response?.data?.message || t("bookingRequest.submitError"),
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const iconMarginStyle = isRTL ? { marginLeft: 10 } : { marginRight: 10 };
@@ -598,14 +650,21 @@ const BookingRequestScreen: React.FC = () => {
           ]}
           activeOpacity={0.9}
           onPress={handleConfirm}
+          disabled={isSubmitting}
         >
-          <Text style={styles.confirmButtonText}>{t("bookingRequest.confirmButton")}</Text>
-          <MaterialIcons
-            name={isRTL ? "arrow_back" : "arrow_forward"}
-            size={20}
-            color="#fff"
-            style={confirmIconMargin}
-          />
+          {isSubmitting ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <>
+              <Text style={styles.confirmButtonText}>{t("bookingRequest.confirmButton")}</Text>
+              <MaterialIcons
+                name={isRTL ? "arrow_back" : "arrow_forward"}
+                size={20}
+                color="#fff"
+                style={confirmIconMargin}
+              />
+            </>
+          )}
         </TouchableOpacity>
       </View>
     </SafeAreaView>

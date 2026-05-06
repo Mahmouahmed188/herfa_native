@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -13,11 +13,31 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useAuthStore } from '../store/authStore';
 import { useLanguage, SUPPORTED_LANGUAGES } from '../contexts/LanguageContext';
 import { useTheme, ThemeMode } from '../contexts/ThemeContext';
+import { usersApi, UserProfile } from '../services';
 
 const ProfileScreen: React.FC = () => {
   const { user, logout } = useAuthStore();
   const { t, currentLanguage, changeLanguage, supportedLanguages } = useLanguage();
   const { theme, themeMode, setThemeMode, isDark } = useTheme();
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      setIsLoading(true);
+      try {
+        const data = await usersApi.getProfile();
+        setProfile(data);
+      } catch (error) {
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchProfile();
+  }, []);
+
+  const displayName = profile?.firstName || profile?.lastName || user?.email?.split('@')[0] || 'User';
+  const displayEmail = profile?.email || user?.email || '';
 
   const handleLogout = () => {
     Alert.alert(
@@ -111,11 +131,11 @@ const ProfileScreen: React.FC = () => {
 
         <View style={styles.profileSection}>
           <Image
-            source={{ uri: user?.avatar || 'https://via.placeholder.com/80' }}
+            source={{ uri: profile?.avatar || user?.avatar || 'https://via.placeholder.com/80' }}
             style={styles.avatar}
           />
-          <Text style={[styles.name, { color: theme.colors.text }]}>{user?.name || 'Ahmed'}</Text>
-          <Text style={[styles.email, { color: theme.colors.textSecondary }]}>{user?.email || 'ahmed@example.com'}</Text>
+          <Text style={[styles.name, { color: theme.colors.text }]}>{displayName}</Text>
+          <Text style={[styles.email, { color: theme.colors.textSecondary }]}>{displayEmail}</Text>
         </View>
 
         {/* Language Setting */}

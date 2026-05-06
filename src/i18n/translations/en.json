@@ -26,7 +26,9 @@
     "filter": "Filter",
     "viewAll": "View All",
     "seeMore": "See More",
-    "showLess": "Show Less"
+    "showLess": "Show Less",
+    "details": "Details",
+    "confirm": "Confirm"
   },
   "auth": {
     "login": "Login",
@@ -43,6 +45,8 @@
     "dontHaveAccount": "Don't have an account?",
     "loginSuccess": "Login successful!",
     "loginError": "Login failed. Please try again.",
+    "registrationSuccess": "Your account has been created successfully!",
+    "registrationError": "Registration failed. Please try again.",
     "emailPlaceholder": "technician@herfa.com",
     "passwordPlaceholder": "••••••••",
     "orContinueWith": "Or continue with",
@@ -56,7 +60,10 @@
     "passwordRequired": "Password is required",
     "passwordMinLength": "Password must be at least 6 characters",
     "passwordMismatch": "Passwords do not match",
-    "fieldRequired": "This field is required"
+    "fieldRequired": "This field is required",
+    "nameRequired": "Name is required",
+    "phoneRequired": "Phone number is required",
+    "locationRequired": "Location is required"
   },
   "home": {
     "goodMorning": "Good morning",
@@ -94,7 +101,9 @@
     "past": "Past",
     "cancelled": "Cancelled",
     "noBookings": "No bookings yet",
-    "bookServiceNow": "Book a service now"
+    "bookServiceNow": "Book a service now",
+    "all": "All",
+    "noBookingsMessage": "Start by booking your first service"
   },
   "bookingRequest": {
     "title": "Booking Request",
@@ -119,6 +128,7 @@
     "confirmButton": "Confirm Booking",
     "submitSuccessTitle": "Request sent",
     "submitSuccessMessage": "Your booking request has been submitted.",
+    "submitError": "Failed to submit booking. Please try again.",
     "serviceLeak": "Leak Repair",
     "serviceClog": "Clogged Drain",
     "serviceInstall": "New Installation",
@@ -145,7 +155,10 @@
     "subtitle": "Chat with technicians and support team",
     "noMessages": "No messages yet",
     "typeMessage": "Type a message...",
-    "send": "Send"
+    "send": "Send",
+    "conversations": "conversations",
+    "noConversations": "No conversations yet",
+    "noConversationsMessage": "Start a conversation by booking a service"
   },
   "profile": {
     "title": "Profile",

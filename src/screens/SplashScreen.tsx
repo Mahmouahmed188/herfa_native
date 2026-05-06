@@ -6,13 +6,13 @@ import {
   Animated,
   Dimensions,
   useColorScheme,
-  ActivityIndicator,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
+import { useAuthStore } from '../store/authStore';
 
 const { width, height } = Dimensions.get('window');
 
@@ -87,64 +87,59 @@ const ActivitySpinner: React.FC<{ color?: string; size?: number }> = ({
  * - Supports dark/light mode themes
  */
 const SplashScreen: React.FC = () => {
-  // Get the navigation object to programmatically navigate between screens
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { checkAuth, isAuthenticated } = useAuthStore();
   
-  // Detect system color scheme (dark/light mode)
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
 
-  // Animation values using refs to persist across renders
-  const fadeAnim = useRef(new Animated.Value(0)).current;      // Controls overall fade in/out
-  const scaleAnim = useRef(new Animated.Value(0.8)).current;   // Controls logo scale animation
-  const progressAnim = useRef(new Animated.Value(0)).current;  // Controls progress bar width
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(new Animated.Value(0.8)).current;
+  const progressAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    // STEP 1: Initial entrance animations
-    // Fade in and scale up the logo simultaneously for a dynamic entrance
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 800,
-        useNativeDriver: true,
-      }),
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        friction: 8,
-        tension: 40,
-        useNativeDriver: true,
-      }),
-    ]).start();
+    const initializeApp = async () => {
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 800,
+          useNativeDriver: true,
+        }),
+        Animated.spring(scaleAnim, {
+          toValue: 1,
+          friction: 8,
+          tension: 40,
+          useNativeDriver: true,
+        }),
+      ]).start();
 
-    // STEP 2: Progress bar animation
-    // Animate the progress bar from 0% to 65% over 2 seconds
-    Animated.timing(progressAnim, {
-      toValue: 0.65,
-      duration: 2000,
-      useNativeDriver: false,
-    }).start();
+      Animated.timing(progressAnim, {
+        toValue: 0.65,
+        duration: 2000,
+        useNativeDriver: false,
+      }).start();
 
-    // STEP 3: Auto-navigation setup
-    // Set a timer to navigate to Onboarding screen after 2.5 seconds
-    // This gives users enough time to see the splash screen while app initializes
-    const navigationTimer = setTimeout(() => {
-      // STEP 4: Exit animation
-      // Fade out the entire screen before navigation for a smooth transition
-      Animated.timing(fadeAnim, {
-        toValue: 0,
-        duration: 500,
-        useNativeDriver: true,
-      }).start(() => {
-        // STEP 5: Navigate to Onboarding screen
-        // This replaces the current screen in the stack
-        navigation.replace('Onboarding');
-      });
-    }, 2500); // 2.5 second delay
+      const isAuth = await checkAuth();
 
-    // Cleanup function: Clear the timer if component unmounts before navigation
-    // This prevents memory leaks and navigation errors
-    return () => clearTimeout(navigationTimer);
-  }, [fadeAnim, scaleAnim, progressAnim, navigation]);
+      setTimeout(() => {
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 500,
+          useNativeDriver: true,
+        }).start(() => {
+          if (isAuth) {
+            navigation.replace('Main');
+          } else {
+            navigation.replace('Onboarding');
+          }
+        });
+      }, 2500);
+    };
+
+    initializeApp();
+
+    return () => {};
+  }, [fadeAnim, scaleAnim, progressAnim, navigation, checkAuth]);
 
   const backgroundColor = isDark ? '#0A0F08' : '#f8f7f5';
   const textColor = isDark ? '#FFFFFF' : '#1a1a1a';

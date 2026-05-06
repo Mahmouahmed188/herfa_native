@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -19,16 +19,11 @@ import { useTheme } from "../contexts/ThemeContext";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../navigation/AppNavigator";
+import { useServices } from "../hooks/useServices";
+import { useProviders } from "../hooks/useProviders";
+import { notificationsApi } from "../services";
 
 const { width } = Dimensions.get("window");
-
-// Types
-interface Category {
-  id: string;
-  nameKey: string;
-  icon: string;
-  isActive?: boolean;
-}
 
 interface Technician {
   id: string;
@@ -74,6 +69,18 @@ const Header: React.FC = () => {
   const { user } = useAuthStore();
   const { t } = useLanguage();
   const { theme, isDark } = useTheme();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      try {
+        const response = await notificationsApi.getUnreadCount();
+        setUnreadCount(response.count);
+      } catch (error) {
+      }
+    };
+    fetchUnreadCount();
+  }, []);
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -81,6 +88,8 @@ const Header: React.FC = () => {
     if (hour < 17) return t("home.goodAfternoon");
     return t("home.goodEvening");
   };
+
+  const userName = user?.firstName || user?.lastName || user?.email?.split('@')[0] || 'Ahmed';
 
   return (
     <View style={[styles.header, { backgroundColor: theme.colors.background }]}>
@@ -100,7 +109,7 @@ const Header: React.FC = () => {
           </View>
           <View style={styles.greetingContainer}>
             <Text style={[styles.greetingName, { color: theme.colors.text }]}>
-              {getGreeting()}, {user?.name || "Ahmed"}
+              {getGreeting()}, {userName}
             </Text>
             <Text
               style={[
@@ -118,12 +127,14 @@ const Header: React.FC = () => {
             size={28}
             color={isDark ? "#FFFFFF" : theme.colors.text}
           />
-          <View
-            style={[
-              styles.notificationBadge,
-              { backgroundColor: theme.colors.primary },
-            ]}
-          />
+          {unreadCount > 0 && (
+            <View
+              style={[
+                styles.notificationBadge,
+                { backgroundColor: theme.colors.primary },
+              ]}
+            />
+          )}
         </TouchableOpacity>
       </View>
     </View>
@@ -424,14 +435,48 @@ const ActiveProjectCard: React.FC = () => {
 // Categories Section
 const CategoriesSection: React.FC = () => {
   const { t } = useLanguage();
-  const { theme, isDark } = useTheme();
+  const { theme } = useTheme();
+  const { categories, isLoading } = useServices();
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  const getCategoryIcon = (iconName: string | undefined): string => {
+    const iconMap: Record<string, string> = {
+      'plumbing': 'water-drop',
+      'electrical': 'bolt',
+      'carpentry': 'handyman',
+      'painting': 'format-paint',
+      'ac': 'ac-unit',
+      'cleaning': 'cleaning-services',
+      'default': 'build',
+    };
+    return iconMap[iconName?.toLowerCase() || ''] || iconMap['default'];
+  };
+
+  if (isLoading) {
+    return (
+      <View style={styles.categoriesSection}>
+        <Text style={[styles.sectionTitle, { color: theme.colors.text, marginBottom: 12, marginLeft: 16 }]}>
+          {t("home.categories")}
+        </Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoriesScroll}>
+          {[1, 2, 3, 4].map((i) => (
+            <View key={i} style={styles.categoryItem}>
+              <View style={[styles.categoryIconContainer, { backgroundColor: theme.colors.surfaceSecondary }]}>
+                <MaterialIcons name="build" size={32} color={theme.colors.textSecondary} />
+              </View>
+            </View>
+          ))}
+        </ScrollView>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.categoriesSection}>
       <Text
         style={[
           styles.sectionTitle,
-          { color: theme.colors.text, marginBottom: 12 },
+          { color: theme.colors.text, marginBottom: 12, marginLeft: 16 },
         ]}
       >
         {t("home.categories")}
@@ -441,43 +486,43 @@ const CategoriesSection: React.FC = () => {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.categoriesScroll}
       >
-        {CATEGORIES.map((category) => (
-          <TouchableOpacity
-            key={category.id}
-            style={styles.categoryItem}
-            activeOpacity={0.8}
-          >
-            <View
-              style={[
-                styles.categoryIconContainer,
-                {
-                  backgroundColor: theme.colors.surfaceSecondary,
-                  borderColor: theme.colors.border,
-                },
-              ]}
+        {categories.map((category) => {
+          const isActive = selectedCategory === category.id;
+          return (
+            <TouchableOpacity
+              key={category.id}
+              style={styles.categoryItem}
+              activeOpacity={0.8}
+              onPress={() => setSelectedCategory(isActive ? null : category.id)}
             >
-              <MaterialIcons
-                name={category.icon as any}
-                size={32}
-                color={
-                  category.isActive
-                    ? theme.colors.primary
-                    : theme.colors.textSecondary
-                }
-              />
-            </View>
-            <Text
-              style={[
-                styles.categoryName,
-                category.isActive
-                  ? { color: theme.colors.text, fontWeight: "700" }
-                  : { color: theme.colors.textSecondary },
-              ]}
-            >
-              {t(category.nameKey)}
-            </Text>
-          </TouchableOpacity>
-        ))}
+              <View
+                style={[
+                  styles.categoryIconContainer,
+                  {
+                    backgroundColor: isActive ? `${theme.colors.primary}15` : theme.colors.surfaceSecondary,
+                    borderColor: isActive ? theme.colors.primary : theme.colors.border,
+                  },
+                ]}
+              >
+                <MaterialIcons
+                  name={getCategoryIcon(category.icon) as any}
+                  size={32}
+                  color={isActive ? theme.colors.primary : theme.colors.textSecondary}
+                />
+              </View>
+              <Text
+                style={[
+                  styles.categoryName,
+                  isActive
+                    ? { color: theme.colors.text, fontWeight: "700" }
+                    : { color: theme.colors.textSecondary },
+                ]}
+              >
+                {category.name || category.nameAr || 'Service'}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
       </ScrollView>
     </View>
   );
@@ -590,6 +635,34 @@ const TechnicianCard: React.FC<TechnicianCardProps> = ({ technician }) => {
 const TopRatedSection: React.FC = () => {
   const { t } = useLanguage();
   const { theme } = useTheme();
+  const { providers, isLoading } = useProviders();
+
+  if (isLoading) {
+    return (
+      <View style={styles.topRatedSection}>
+        <Text style={[styles.sectionTitle, { color: theme.colors.text, marginBottom: 12 }]}>
+          {t("home.topRatedNearby")}
+        </Text>
+        <View style={styles.techniciansList}>
+          {[1, 2].map((i) => (
+            <View key={i} style={[styles.technicianCard, { backgroundColor: theme.colors.card, borderColor: theme.colors.border }]}>
+              <View style={styles.technicianAvatar} />
+              <View style={styles.technicianInfo} />
+            </View>
+          ))}
+        </View>
+      </View>
+    );
+  }
+
+  const technicians: Technician[] = providers.slice(0, 5).map((provider) => ({
+    id: provider.id,
+    name: provider.businessName || provider.user?.firstName || 'Provider',
+    specialty: provider.services?.[0]?.service?.name || 'General Services',
+    rating: provider.rating || 0,
+    status: provider.isAvailable ? "available" as const : "busy" as const,
+    avatar: provider.avatar || 'https://via.placeholder.com/48',
+  }));
 
   return (
     <View style={styles.topRatedSection}>

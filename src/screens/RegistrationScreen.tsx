@@ -18,6 +18,9 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MaterialIcons } from '@expo/vector-icons';
 import { RootStackParamList } from '../navigation/AppNavigator';
+import { useAuthStore } from '../store/authStore';
+import { useLanguage } from '../contexts/LanguageContext';
+import { useTheme } from '../contexts/ThemeContext';
 
 // Color constants from design
 const COLORS = {
@@ -91,6 +94,9 @@ const RegistrationScreen: React.FC = () => {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { register, isLoading: authLoading } = useAuthStore();
+  const { t } = useLanguage();
+  const { theme } = useTheme();
 
   // Form state
   const [formData, setFormData] = useState<RegistrationFormData>({
@@ -104,6 +110,7 @@ const RegistrationScreen: React.FC = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'login' | 'signup'>('signup');
+  const [apiError, setApiError] = useState<string | null>(null);
 
   // Theme colors
   const backgroundColor = isDark ? '#0A0F08' : COLORS.white;
@@ -206,22 +213,24 @@ const RegistrationScreen: React.FC = () => {
     }
 
     setIsLoading(true);
+    setApiError(null);
+
+    const nameParts = formData.fullName.trim().split(' ');
+    const firstName = nameParts[0];
+    const lastName = nameParts.slice(1).join(' ') || undefined;
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // TODO: Replace with actual registration logic
-      console.log('Registration successful:', {
-        fullName: formData.fullName,
+      await register({
         email: formData.email,
+        phone: formData.confirmPassword.slice(0, 10).padStart(10, '0'),
         password: formData.password,
+        firstName,
+        lastName,
       });
       
-      // Navigate to Login screen after successful registration
       Alert.alert(
-        'Success!',
-        'Your account has been created successfully.',
+        t('common.success'),
+        t('auth.registrationSuccess'),
         [
           {
             text: 'OK',
@@ -231,12 +240,14 @@ const RegistrationScreen: React.FC = () => {
           },
         ]
       );
-    } catch (error) {
-      Alert.alert('Error', 'Registration failed. Please try again.');
+    } catch (error: any) {
+      const errorMessage = error.message || t('auth.registrationError');
+      setApiError(errorMessage);
+      Alert.alert(t('common.error'), errorMessage);
     } finally {
       setIsLoading(false);
     }
-  }, [formData, navigation]);
+  }, [formData, register, navigation, t]);
 
   // Social login handlers
   const handleGoogleSignup = useCallback(() => {
