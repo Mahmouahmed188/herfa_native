@@ -11,10 +11,13 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useJobs } from '../hooks/useJobs';
 import { Job, JobStatus } from '../services';
+import type { RootStackParamList } from '../navigation/AppNavigator';
 
 const STATUS_COLORS: Record<JobStatus, string> = {
   PENDING: '#F59E0B',
@@ -118,9 +121,14 @@ const JobCard: React.FC<JobCardProps> = ({ job, theme, t }) => {
 const BookingsScreen: React.FC = () => {
   const { t } = useLanguage();
   const { theme } = useTheme();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { jobs, isLoading, refresh } = useJobs();
   const [selectedStatus, setSelectedStatus] = useState<JobStatus | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+
+  const handleJobPress = (job: Job) => {
+    navigation.navigate('BookingStatus', { job });
+  };
 
   const filteredJobs = selectedStatus ? jobs.filter(j => j.status === selectedStatus) : jobs;
 
@@ -206,7 +214,11 @@ const BookingsScreen: React.FC = () => {
               tintColor={theme.colors.primary}
             />
           }
-          renderItem={({ item }) => <JobCard job={item} theme={theme} t={t} />}
+          renderItem={({ item }) => (
+            <TouchableOpacity activeOpacity={0.8} onPress={() => handleJobPress(item)}>
+              <JobCard job={item} theme={theme} t={t} />
+            </TouchableOpacity>
+          )}
         />
       )}
     </SafeAreaView>

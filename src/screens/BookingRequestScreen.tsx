@@ -8,6 +8,7 @@ import {
   TextInput,
   Image,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -105,7 +106,7 @@ const BookingRequestScreen: React.FC = () => {
     Alert.alert(t("common.comingSoon"), t("bookingRequest.addPhotos"));
   };
 
-  const handleConfirm = async () => {
+  const handleConfirm = () => {
     if (!name.trim()) {
       Alert.alert(t("common.error"), t("validation.nameRequired"));
       return;
@@ -119,43 +120,23 @@ const BookingRequestScreen: React.FC = () => {
       return;
     }
 
-    setIsSubmitting(true);
-    try {
-      const category = categories.find(c => c.id === selectedCategory);
-      const service = services.find(s => s.categoryId === category?.id) || services[0];
+    const categoryName = t(CATEGORY_OPTIONS.find(c => c.id === selectedCategory)?.nameKey || 'home.plumbing');
+    const serviceTypeName = t(SERVICE_TYPES.find(s => s.id === selectedService)?.labelKey || 'bookingRequest.serviceOther');
 
-      const jobPayload: CreateJobPayload = {
-        serviceId: service?.id || selectedCategory,
-        title: `${category?.name || 'Service'} - ${SERVICE_TYPES.find(s => s.id === selectedService)?.labelKey || selectedService}`,
-        description: notes,
-        address: location,
-        latitude: selectedCoords.lat,
-        longitude: selectedCoords.lng,
-        scheduledDate: selectedDate.toISOString(),
-        scheduledTime: selectedTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-        notes: notes,
-      };
-
-      await createJob(jobPayload);
-
-      Alert.alert(
-        t("bookingRequest.submitSuccessTitle"),
-        t("bookingRequest.submitSuccessMessage"),
-        [
-          {
-            text: 'OK',
-            onPress: () => navigation.goBack(),
-          },
-        ]
-      );
-    } catch (error: any) {
-      Alert.alert(
-        t("common.error"),
-        error.response?.data?.message || t("bookingRequest.submitError"),
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
+    navigation.navigate('BookingSummary', {
+      bookingData: {
+        category: categoryName,
+        serviceType: serviceTypeName,
+        name,
+        contact,
+        location,
+        coordinates: selectedCoords,
+        date: selectedDate,
+        time: selectedTime,
+        notes,
+        estimatedPrice: '80 - 120',
+      },
+    });
   };
 
   const iconMarginStyle = isRTL ? { marginLeft: 10 } : { marginRight: 10 };

@@ -11,7 +11,13 @@ import RegistrationScreen from '../screens/RegistrationScreen';
 import LoginScreen from '../screens/LoginScreen';
 import BottomTabNavigator from './BottomTabNavigator';
 import BookingRequestScreen from '../screens/BookingRequestScreen';
+import BookingSummaryScreen from '../screens/BookingSummaryScreen';
+import BookingConfirmationScreen from '../screens/BookingConfirmationScreen';
+import BookingStatusScreen from '../screens/BookingStatusScreen';
+import PaymentScreen from '../screens/PaymentScreen';
+import PaymentSuccessScreen from '../screens/PaymentSuccessScreen';
 import LocationSelectionScreen from '../screens/LocationSelectionScreen';
+import type { Job } from '../services';
 
 // Root Stack Param List
 export type RootStackParamList = {
@@ -21,6 +27,25 @@ export type RootStackParamList = {
   Login: undefined;
   Main: undefined;
   BookingRequest: undefined;
+  BookingSummary: {
+    bookingId?: string;
+    bookingData?: any;
+  };
+  BookingConfirmation: {
+    bookingId?: string;
+  };
+  BookingStatus: {
+    job?: Job;
+  };
+  Payment: {
+    totalAmount?: number;
+    bookingId?: string;
+  };
+  PaymentSuccess: {
+    amount?: number;
+    paymentMethod?: string;
+    bookingId?: string;
+  };
   LocationSelection: {
     currentPlace?: string;
     currentCoords?: {
@@ -74,6 +99,11 @@ const MainNavigator: React.FC = () => {
     >
       <Stack.Screen name="Main" component={BottomTabNavigator} />
       <Stack.Screen name="BookingRequest" component={BookingRequestScreen} />
+      <Stack.Screen name="BookingSummary" component={BookingSummaryScreen} />
+      <Stack.Screen name="BookingConfirmation" component={BookingConfirmationScreen} />
+      <Stack.Screen name="BookingStatus" component={BookingStatusScreen} />
+      <Stack.Screen name="Payment" component={PaymentScreen} />
+      <Stack.Screen name="PaymentSuccess" component={PaymentSuccessScreen} />
       <Stack.Screen
         name="LocationSelection"
         component={LocationSelectionScreen}
