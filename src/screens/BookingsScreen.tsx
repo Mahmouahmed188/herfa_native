@@ -105,7 +105,7 @@ const JobCard: React.FC<JobCardProps> = ({ job, theme, t }) => {
       <View style={styles.jobFooter}>
         {job.estimatedPrice && (
           <Text style={[styles.jobPrice, { color: theme.colors.primary }]}>
-            {job.estimatedPrice} SAR
+            {job.estimatedPrice} EGP
           </Text>
         )}
         <TouchableOpacity style={[styles.detailsButton, { backgroundColor: theme.colors.surfaceSecondary }]} activeOpacity={0.7}>

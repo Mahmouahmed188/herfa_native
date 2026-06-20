@@ -371,7 +371,7 @@ const BookingStatusScreen: React.FC = () => {
                   {t('bookingStatus.price')}
                 </Text>
                 <Text style={[styles.priceValue, { color: theme.colors.primary }]}>
-                  {mockJob.estimatedPrice} SAR
+                  {mockJob.estimatedPrice} EGP
                 </Text>
               </View>
             </View>

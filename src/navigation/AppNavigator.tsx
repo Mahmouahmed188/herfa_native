@@ -17,7 +17,11 @@ import BookingStatusScreen from '../screens/BookingStatusScreen';
 import PaymentScreen from '../screens/PaymentScreen';
 import PaymentSuccessScreen from '../screens/PaymentSuccessScreen';
 import LocationSelectionScreen from '../screens/LocationSelectionScreen';
+import OffersScreen from '../screens/OffersScreen';
+import ProviderProfileScreen from '../screens/ProviderProfileScreen';
+import OfferAcceptedScreen from '../screens/OfferAcceptedScreen';
 import type { Job } from '../services';
+import type { ProviderOffer } from '../types/offers';
 
 // Root Stack Param List
 export type RootStackParamList = {
@@ -56,6 +60,13 @@ export type RootStackParamList = {
       address: string,
       coords: { lat: number; lng: number },
     ) => void;
+  };
+  Offers: undefined;
+  ProviderProfile: {
+    offer: ProviderOffer;
+  };
+  OfferAccepted: {
+    offer: ProviderOffer;
   };
 };
 
@@ -109,6 +120,9 @@ const MainNavigator: React.FC = () => {
         component={LocationSelectionScreen}
         options={{ presentation: "modal" }}
       />
+      <Stack.Screen name="Offers" component={OffersScreen} />
+      <Stack.Screen name="ProviderProfile" component={ProviderProfileScreen} />
+      <Stack.Screen name="OfferAccepted" component={OfferAcceptedScreen} />
     </Stack.Navigator>
   );
 };

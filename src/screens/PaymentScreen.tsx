@@ -284,7 +284,7 @@ const PaymentScreen: React.FC = () => {
             {t('payment.total')}
           </Text>
           <Text style={[styles.totalValue, { color: theme.colors.text }]}>
-            {amount} SAR
+            {amount} EGP
           </Text>
         </View>
 
@@ -306,7 +306,7 @@ const PaymentScreen: React.FC = () => {
             <>
               <MaterialIcons name="lock" size={18} color="#fff" style={iconMarginStyle} />
               <Text style={styles.payButtonText}>
-                {t('payment.pay')} {amount} SAR
+                {t('payment.pay')} {amount} EGP
               </Text>
             </>
           )}

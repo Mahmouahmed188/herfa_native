@@ -46,7 +46,7 @@ class ApiService {
         const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
         if (error.response?.status === 401 && !originalRequest._retry) {
-          if (this.isRefreshing) {
+          if (this.isRefreshing && this.refreshPromise) {
             return this.refreshPromise.then(() => this.api(originalRequest));
           }
 

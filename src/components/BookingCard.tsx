@@ -126,7 +126,7 @@ const BookingCard: React.FC<BookingCardProps> = ({
         <View style={[styles.footer, isRTL && styles.footerRTL]}>
           {job.estimatedPrice && (
             <Text style={[styles.price, { color: theme.colors.primary }]}>
-              {job.estimatedPrice} SAR
+              {job.estimatedPrice} EGP
             </Text>
           )}
           {showCancelButton && job.status === 'PENDING' && onCancel && (

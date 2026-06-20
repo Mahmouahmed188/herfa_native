@@ -307,7 +307,7 @@ const BookingSummaryScreen: React.FC = () => {
             {t('bookingSummary.estimatedTotal')}
           </Text>
           <Text style={[styles.priceValue, { color: theme.colors.primary }]}>
-            {data.estimatedPrice || '80 - 120'} SAR
+            {data.estimatedPrice || '80 - 120'} EGP
           </Text>
         </View>
         <TouchableOpacity

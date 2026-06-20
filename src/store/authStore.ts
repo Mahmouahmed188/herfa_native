@@ -7,6 +7,8 @@ export interface User {
   name: string;
   email: string;
   avatar?: string;
+  firstName?: string;
+  lastName?: string;
 }
 
 interface AuthState {
@@ -16,6 +18,8 @@ interface AuthState {
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   setUser: (user: User | null) => void;
+  checkAuth: () => Promise<boolean>;
+  register: (payload: { email: string; phone: string; password: string; firstName?: string; lastName?: string }) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -50,6 +54,33 @@ export const useAuthStore = create<AuthState>()(
       },
       setUser: (user: User | null) => {
         set({ user, isAuthenticated: !!user });
+      },
+      checkAuth: async () => {
+        set({ isLoading: true });
+        try {
+          const state = get();
+          return state.isAuthenticated && !!state.user;
+        } finally {
+          set({ isLoading: false });
+        }
+      },
+      register: async (payload) => {
+        set({ isLoading: true });
+        try {
+          await new Promise((resolve) => setTimeout(resolve, 1500));
+          const mockUser: User = {
+            id: Date.now().toString(),
+            name: payload.firstName || 'User',
+            email: payload.email,
+            firstName: payload.firstName,
+            lastName: payload.lastName,
+          };
+          set({ user: mockUser, isAuthenticated: true });
+        } catch (error) {
+          throw new Error('Registration failed');
+        } finally {
+          set({ isLoading: false });
+        }
       },
     }),
     {

@@ -34,6 +34,13 @@ interface Technician {
   avatar: string;
 }
 
+interface Category {
+  id: string;
+  nameKey: string;
+  icon: string;
+  isActive: boolean;
+}
+
 // Mock data with translation keys
 const CATEGORIES: Category[] = [
   { id: "1", nameKey: "home.plumbing", icon: "water-drop", isActive: true },
@@ -89,7 +96,7 @@ const Header: React.FC = () => {
     return t("home.goodEvening");
   };
 
-  const userName = user?.firstName || user?.lastName || user?.email?.split('@')[0] || 'Ahmed';
+  const userName = user?.name || user?.email?.split('@')[0] || 'Ahmed';
 
   return (
     <View style={[styles.header, { backgroundColor: theme.colors.background }]}>

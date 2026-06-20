@@ -98,7 +98,7 @@ const PaymentSuccessScreen: React.FC = () => {
               {t('paymentSuccess.amountPaid')}
             </Text>
             <Text style={[styles.amountValue, { color: theme.colors.primary }]}>
-              {displayAmount} SAR
+              {displayAmount} EGP
             </Text>
           </View>
           <View style={[styles.divider, { backgroundColor: theme.colors.borderLight }]} />
